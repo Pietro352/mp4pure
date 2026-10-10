@@ -244,14 +244,6 @@
     *{ transition:none !important; animation:none !important; }
   }
 </style>
-<script type="importmap">
-{
-  "imports": {
-    "@ffmpeg/ffmpeg": "https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js",
-    "@ffmpeg/util": "https://unpkg.com/@ffmpeg/util@0.12.4/dist/esm/index.js"
-  }
-}
-</script>
 </head>
 
 <body>
@@ -268,7 +260,7 @@
     <p class="drop-title">Trascina qui un video o clicca per sceglierlo</p>
     <p class="drop-hint">mp4, mkv, avi, mov, webm e altri formati</p>
   </div>
-  <input type="file" id="fileInput" accept=".mp4,.mkv,.avi,.mov,.webm,.m4v,.wmv,.flv,.ts,.m2ts,.mts,.3gp,.ogv,.MP4,.MKV,.AVI,.MOV,.WEBM,.M4V,.WMV,.FLV,.TS" hidden>
+  <input type="file" id="fileInput" accept="video/*,audio/*,.mkv,.avi,.wmv,.flv,.ts,.m2ts,.mts,.3gp,.ogv" hidden>
   <div id="fileInfo">Nessun file selezionato</div>
 </div>
 
@@ -324,9 +316,11 @@
 
 </div>
 
-<script type="module">
-  import { FFmpeg } from '@ffmpeg/ffmpeg';
-  import { fetchFile, toBlobURL } from '@ffmpeg/util';
+<script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
+<script src="https://unpkg.com/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
+<script>
+  const { FFmpeg } = FFmpegWASM;
+  const { fetchFile, toBlobURL } = FFmpegUtil;
 
   // DOM
   const dropZone = document.getElementById('dropZone');
@@ -368,12 +362,13 @@
     addLog('Scarico il motore di codifica (circa 31 MB)…');
     ffmpeg = new FFmpeg();
     progressBound = false;
-    const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
+    const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
+    const ffBase = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd';
     try {
       await ffmpeg.load({
+        classWorkerURL: await toBlobURL(`${ffBase}/814.ffmpeg.js`, 'text/javascript'),
         coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
         wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-        workerURL: await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, 'text/javascript'),
       });
       ffmpegLoaded = true;
       addLog('Motore di codifica pronto');
