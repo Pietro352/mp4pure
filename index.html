@@ -362,7 +362,7 @@
     addLog('Scarico il motore di codifica (circa 31 MB)…');
     ffmpeg = new FFmpeg();
     progressBound = false;
-    const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
+    const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
     const ffBase = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd';
     try {
       await ffmpeg.load({
